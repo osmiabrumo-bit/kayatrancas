@@ -412,7 +412,7 @@ function totals(){
   let team = 1;
   if(people>=2 && washSum>0){ team = 2; t = Math.max(longest + (washSum?washMin:0), washSum, Math.ceil(t/2/15)*15); }
   const z = zone ? ZONES.find(x=>x.k===zone) : null;
-  const sl = slot ? {k:slot,p:slotP(slot)} : null;
+  const sl = slot ? {k:slot,p:slotP(slot)*team} : null;
   const ids = Object.keys(cart), braid = ids.some(id=>!ALL[id].comp);
   const fee = (!braid && ids.some(id=>ALL[id].eq)) ? Math.max(...ids.filter(id=>ALL[id].eq).map(id=>ALL[id].fee)) : 0;
   const total = s + fee + (z?z.p:0) + (sl?sl.p:0);
@@ -482,9 +482,9 @@ function renderSlots(){
   else h += `<p class="tg"><b>${lang==="en"?"Morning":"Manhã"}</b> · ${lang==="en"?"no time available for this duration":"sem horário disponível para esta duração"}</p>`;
   const none = lang==="en"?"no time available for this duration":"sem horário disponível para esta duração";
   h += g.a.length ? `<p class="tg"><b>${lang==="en"?"Afternoon":"Tarde"}</b></p><div class="times">${g.a.map(btn).join("")}</div>` : `<p class="tg"><b>${lang==="en"?"Afternoon":"Tarde"}</b> · ${none}</p>`;
-  h += g.n.length ? `<p class="tg"><b>${lang==="en"?"Evening":"Noite"}</b> · ${lang==="en"?"extra 350 MT":"acréscimo de 350 MT"}</p><div class="times">${g.n.map(btn).join("")}</div>` : `<p class="tg"><b>${lang==="en"?"Evening":"Noite"}</b> · ${none}</p>`;
+  h += g.n.length ? `<p class="tg"><b>${lang==="en"?"Evening":"Noite"}</b> · ${lang==="en"?"extra from 350 MT (350 per braider)":"acréscimo desde 350 MT (350 por trancista)"}</p><div class="times">${g.n.map(btn).join("")}</div>` : `<p class="tg"><b>${lang==="en"?"Evening":"Noite"}</b> · ${none}</p>`;
   box.innerHTML = h;
-  hint.textContent = lang==="en" ? (slot ? (TT.unk ? `We start at ${slot}. We confirm the finishing time on WhatsApp.` : `We start at ${slot} and finish around ${clock(toMin(slot)+TT.t)}.`) : "Choose the time you want us to start. During the day we finish by 20:00, so longer styles only show earlier times. Starting at 18:00 has an extra 350 MT, and we finish by 22:30.") : (slot ? (TT.unk ? `Começamos às ${slot}. Confirmamos a hora de fim pelo WhatsApp.` : `Começamos às ${slot} e terminamos por volta das ${clock(toMin(slot)+TT.t)}.`) : "Escolha a hora a que quer que comecemos. Durante o dia terminamos até às 20:00, por isso nos estilos mais longos só aparecem as horas mais cedo. Início às 18:00: acréscimo de 350 MT, e terminamos até às 22:30.");
+  hint.textContent = lang==="en" ? (slot ? (TT.unk ? `We start at ${slot}. We confirm the finishing time on WhatsApp.` : `We start at ${slot} and finish around ${clock(toMin(slot)+TT.t)}.`) : "Choose the time you want us to start. During the day we finish by 20:00, so longer styles only show earlier times. Starting at 18:00 has an extra from 350 MT (350 per braider), and we finish by 22:30.") : (slot ? (TT.unk ? `Começamos às ${slot}. Confirmamos a hora de fim pelo WhatsApp.` : `Começamos às ${slot} e terminamos por volta das ${clock(toMin(slot)+TT.t)}.`) : "Escolha a hora a que quer que comecemos. Durante o dia terminamos até às 20:00, por isso nos estilos mais longos só aparecem as horas mais cedo. Início às 18:00: acréscimo desde 350 MT (350 por trancista), e terminamos até às 22:30.");
 }
 function update(bump){
   renderSlots();
@@ -542,7 +542,7 @@ function buildMessage(quiet){
   L.push("");
   L.push("Deslocação, Zona " + T.z.k + (T.z.p ? ": " + (T.z.from?"desde ":"") + mt(T.z.p) : ": incluída"));
   if(T.fee) L.push("Deslocação do equipamento (sem tranças): " + mt(T.fee));
-  if(T.sl.p) L.push("Horário a partir das 18:00: " + mt(T.sl.p));
+  if(T.sl.p) L.push("Horário a partir das 18:00" + (T.team>1?" (2 trancistas)":"") + ": " + mt(T.sl.p));
   L.push("Total" + (T.from?" (desde)":"") + ": " + mt(T.total));
   L.push(T.unk ? "Tempo: a confirmar" : "Tempo: cerca de " + (fmtT(T.t)||"a confirmar")); if(T.team>1) L.push("Equipa: 2 trancistas");
   L.push("Sinal de 50%: " + mt(Math.round(T.total/2)) + (T.ask ? " (mais 50% do valor a confirmar)" : ""));
